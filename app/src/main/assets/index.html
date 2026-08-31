@@ -1,0 +1,2305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>考公工作台</title>
+<style>:root {
+--bg-beige: #F5F0E8;
+--bg-green: #E8F5E9;
+--primary-green: #4CAF50;
+--dark-green: #2E7D32;
+--light-green: #A5D6A7;
+--text-dark: #2C3E2D;
+--text-medium: #5D6B5E;
+--text-light: #8FA090;
+--accent-orange: #FF8A65;
+--accent-blue: #64B5F6;
+--card-shadow: 0 2px 12px rgba(0,0,0,0.06);
+--radius: 16px;
+--sidebar-width: 200px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+background: var(--bg-beige);
+color: var(--text-dark);
+overflow: hidden;
+height: 100vh;
+}
+
+#app {
+display: flex;
+height: 100vh;
+width: 100vw;
+}
+
+/* ===== 左侧导航栏 ===== */
+#sidebar {
+width: var(--sidebar-width);
+background: linear-gradient(180deg, #FFFFFF 0%, #F0FAF0 100%);
+border-right: 1px solid rgba(76,175,80,0.15);
+overflow-y: auto;
+padding: 12px 0;
+flex-shrink: 0;
+}
+
+.logo {
+padding: 16px 16px 20px;
+text-align: center;
+border-bottom: 1px solid rgba(76,175,80,0.1);
+margin-bottom: 8px;
+}
+.logo-icon { font-size: 32px; }
+.logo-text {
+font-size: 16px;
+font-weight: 800;
+color: var(--dark-green);
+margin-top: 4px;
+}
+
+.nav-group { margin-bottom: 4px; }
+.nav-group-title {
+padding: 10px 16px 6px;
+font-size: 10px;
+font-weight: 700;
+color: var(--text-light);
+text-transform: uppercase;
+letter-spacing: 0.5px;
+}
+
+.nav-item {
+padding: 11px 16px;
+font-size: 13px;
+font-weight: 600;
+color: var(--text-medium);
+cursor: pointer;
+transition: all 0.2s;
+border-left: 3px solid transparent;
+display: flex;
+align-items: center;
+gap: 8px;
+line-height: 1.3;
+}
+.nav-item:hover {
+background: rgba(76,175,80,0.06);
+color: var(--dark-green);
+}
+.nav-item.active {
+background: linear-gradient(90deg, rgba(76,175,80,0.12), transparent);
+color: var(--dark-green);
+border-left-color: var(--primary-green);
+font-weight: 700;
+}
+.nav-item .nav-icon { font-size: 16px; }
+
+/* ===== 主内容区 ===== */
+#content {
+flex: 1;
+overflow-y: auto;
+padding: 0;
+-webkit-overflow-scrolling: touch;
+}
+
+.page {
+display: none;
+padding: 16px 18px 40px;
+animation: fadeIn 0.25s ease;
+}
+.page.active { display: block; }
+
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(8px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== 桌面头部 ===== */
+.desktop-header {
+background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+border-radius: var(--radius);
+padding: 20px 18px;
+color: #fff;
+text-align: center;
+margin-bottom: 14px;
+position: relative;
+overflow: hidden;
+}
+.desktop-header::after {
+content: '';
+position: absolute;
+top: -50%; right: -20%;
+width: 200px; height: 200px;
+background: rgba(255,255,255,0.08);
+border-radius: 50%;
+}
+.desktop-time { font-size: 40px; font-weight: 800; letter-spacing: 1px; }
+.desktop-date { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+.checkin-btn {
+display: inline-block;
+margin-top: 12px;
+background: rgba(255,255,255,0.2);
+border: 1.5px solid rgba(255,255,255,0.5);
+border-radius: 20px;
+padding: 6px 18px;
+font-size: 13px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s;
+}
+.checkin-btn:hover { background: rgba(255,255,255,0.35); }
+.checkin-btn.checked { background: rgba(255,255,255,0.9); color: var(--dark-green); }
+.daily-quote {
+margin-top: 10px;
+font-size: 12px;
+font-style: italic;
+opacity: 0.9;
+line-height: 1.5;
+}
+
+.countdown-banner {
+background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+border-radius: var(--radius);
+padding: 14px 18px;
+margin-bottom: 14px;
+display: flex;
+align-items: center;
+gap: 12px;
+box-shadow: var(--card-shadow);
+}
+.countdown-banner .cd-icon { font-size: 28px; }
+.countdown-banner .cd-text { font-size: 14px; font-weight: 600; color: #E65100; }
+.countdown-banner .cd-days {
+font-size: 24px;
+font-weight: 800;
+color: #D84315;
+margin-left: auto;
+}
+
+/* ===== 模块卡片 ===== */
+.module-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 12px;
+}
+.module-card {
+background: #fff;
+border-radius: var(--radius);
+padding: 18px 14px;
+text-align: center;
+box-shadow: var(--card-shadow);
+cursor: pointer;
+transition: all 0.2s;
+border: 1.5px solid transparent;
+}
+.module-card:hover {
+transform: translateY(-2px);
+border-color: var(--light-green);
+box-shadow: 0 4px 16px rgba(76,175,80,0.12);
+}
+.card-icon { font-size: 30px; display: block; margin-bottom: 6px; }
+.module-card h3 {
+font-size: 14px;
+font-weight: 700;
+color: var(--text-dark);
+margin-bottom: 4px;
+}
+.module-card p {
+font-size: 11px;
+color: var(--text-light);
+}
+
+/* ===== 模块页面通用 ===== */
+.page-header {
+display: flex;
+align-items: center;
+gap: 10px;
+margin-bottom: 16px;
+padding-bottom: 12px;
+border-bottom: 2px solid rgba(76,175,80,0.1);
+}
+.page-header .back-btn {
+font-size: 20px;
+cursor: pointer;
+color: var(--primary-green);
+padding: 4px;
+}
+.page-header h2 {
+font-size: 18px;
+font-weight: 800;
+color: var(--dark-green);
+}
+
+.page-section {
+background: #fff;
+border-radius: var(--radius);
+padding: 16px;
+margin-bottom: 12px;
+box-shadow: var(--card-shadow);
+}
+.page-section h3 {
+font-size: 14px;
+font-weight: 700;
+color: var(--dark-green);
+margin-bottom: 10px;
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+/* 番茄钟圆环 */
+.tomato-section {
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 20px 16px;
+}
+.tomato-ring-container {
+position: relative;
+width: 160px;
+height: 160px;
+margin-bottom: 14px;
+}
+.tomato-ring-container svg { transform: rotate(-90deg); }
+.ring-bg { fill: none; stroke: #E8F5E9; stroke-width: 10; }
+.ring-progress {
+fill: none;
+stroke: var(--primary-green);
+stroke-width: 10;
+stroke-linecap: round;
+stroke-dasharray: 534;
+stroke-dashoffset: 534;
+transition: stroke-dashoffset 1s linear;
+}
+.tomato-ring-container .ring-label {
+position: absolute;
+top: 50%; left: 50%;
+transform: translate(-50%, -50%);
+text-align: center;
+}
+.ring-label .ring-number { font-size: 28px; font-weight: 800; color: var(--dark-green); }
+.ring-label .ring-text { font-size: 10px; color: var(--text-light); }
+.tomato-btn {
+background: var(--primary-green);
+color: #fff;
+border: none;
+border-radius: 24px;
+padding: 10px 28px;
+font-size: 14px;
+font-weight: 700;
+cursor: pointer;
+box-shadow: 0 2px 8px rgba(76,175,80,0.3);
+}
+.tomato-btn:active { transform: scale(0.96); }
+
+/* 进度条 */
+.progress-bar {
+width: 100%;
+height: 10px;
+background: #E8F5E9;
+border-radius: 5px;
+overflow: hidden;
+margin: 8px 0;
+}
+.progress-bar-fill {
+height: 100%;
+background: linear-gradient(90deg, var(--primary-green), var(--light-green));
+border-radius: 5px;
+transition: width 0.5s ease;
+}
+.progress-text { font-size: 12px; color: var(--text-medium); }
+
+/* 待办事项 */
+.todo-input-row {
+display: flex;
+gap: 8px;
+margin-bottom: 10px;
+}
+.todo-input {
+flex: 1;
+border: 1.5px solid #C8E6C9;
+border-radius: 10px;
+padding: 9px 12px;
+font-size: 13px;
+outline: none;
+background: #FAFFFA;
+}
+.todo-input:focus { border-color: var(--primary-green); }
+.btn-add {
+background: var(--primary-green);
+color: #fff;
+border: none;
+border-radius: 10px;
+padding: 9px 14px;
+font-size: 13px;
+font-weight: 600;
+cursor: pointer;
+}
+.todo-item {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 10px 0;
+border-bottom: 1px solid #F0F0F0;
+font-size: 13px;
+}
+.todo-item:last-child { border-bottom: none; }
+.todo-check {
+width: 22px; height: 22px;
+border: 2px solid var(--primary-green);
+border-radius: 50%;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 12px;
+flex-shrink: 0;
+}
+.todo-check.checked {
+background: var(--primary-green);
+color: #fff;
+}
+.todo-text { flex: 1; }
+.todo-text.done { text-decoration: line-through; color: var(--text-light); }
+.todo-delete { color: #EF5350; font-size: 16px; cursor: pointer; }
+
+/* 按钮通用 */
+.btn-primary {
+background: var(--primary-green);
+color: #fff;
+border: none;
+border-radius: 10px;
+padding: 10px 18px;
+font-size: 13px;
+font-weight: 700;
+cursor: pointer;
+text-align: center;
+display: inline-block;
+}
+.btn-primary:active { transform: scale(0.96); }
+.btn-secondary {
+background: #E8F5E9;
+color: var(--dark-green);
+border: 1.5px solid var(--light-green);
+border-radius: 10px;
+padding: 10px 18px;
+font-size: 13px;
+font-weight: 600;
+cursor: pointer;
+text-align: center;
+display: inline-block;
+}
+.btn-full { width: 100%; }
+
+/* 公式板块 */
+.formula-card {
+background: #FAFFFA;
+border: 1.5px solid #C8E6C9;
+border-radius: 12px;
+padding: 12px 14px;
+margin-bottom: 10px;
+}
+.formula-card .formula-title {
+font-size: 13px;
+font-weight: 700;
+color: var(--dark-green);
+margin-bottom: 4px;
+}
+.formula-card .formula-body {
+font-size: 12px;
+color: var(--text-medium);
+line-height: 1.7;
+font-family: 'Courier New', monospace;
+}
+
+/* 成语辨析 */
+.idiom-pair {
+background: #FAFFFA;
+border: 1.5px solid #C8E6C9;
+border-radius: 12px;
+padding: 14px;
+margin-bottom: 10px;
+}
+.idiom-pair .idiom-words {
+font-size: 15px;
+font-weight: 700;
+color: var(--dark-green);
+margin-bottom: 6px;
+}
+.idiom-pair .idiom-desc {
+font-size: 12px;
+color: var(--text-medium);
+line-height: 1.6;
+}
+
+/* 题目 */
+.quiz-question {
+background: #fff;
+border-radius: 12px;
+padding: 16px;
+margin-bottom: 12px;
+box-shadow: var(--card-shadow);
+}
+.quiz-q-text {
+font-size: 14px;
+font-weight: 600;
+color: var(--text-dark);
+margin-bottom: 12px;
+line-height: 1.6;
+}
+.quiz-option {
+padding: 10px 14px;
+border: 1.5px solid #E0E0E0;
+border-radius: 10px;
+margin-bottom: 8px;
+font-size: 13px;
+cursor: pointer;
+transition: all 0.2s;
+}
+.quiz-option:hover { border-color: var(--light-green); }
+.quiz-option.selected {
+border-color: var(--primary-green);
+background: #E8F5E9;
+font-weight: 600;
+}
+.quiz-option.correct {
+border-color: #4CAF50;
+background: #E8F5E9;
+}
+.quiz-option.wrong {
+border-color: #EF5350;
+background: #FFEBEE;
+}
+
+/* 申论金句 */
+.golden-sentence {
+background: linear-gradient(135deg, #FFF8E1, #FFF3E0);
+border-left: 4px solid #FF8A65;
+border-radius: 0 12px 12px 0;
+padding: 14px 16px;
+margin-bottom: 10px;
+}
+.golden-sentence .gs-text {
+font-size: 14px;
+font-weight: 600;
+color: #E65100;
+line-height: 1.6;
+}
+.golden-sentence .gs-topic {
+font-size: 11px;
+color: #BF360C;
+margin-top: 4px;
+}
+
+/* 百化分练习 */
+.baihuafen-item {
+background: #FAFFFA;
+border: 1.5px solid #C8E6C9;
+border-radius: 12px;
+padding: 14px;
+margin-bottom: 10px;
+}
+.baihuafen-item .bf-question {
+font-size: 14px;
+font-weight: 600;
+margin-bottom: 8px;
+}
+.baihuafen-item input {
+width: 80px;
+border: 1.5px solid #C8E6C9;
+border-radius: 8px;
+padding: 6px 10px;
+font-size: 14px;
+text-align: center;
+margin-left: 8px;
+}
+
+/* ===== 打卡日历 ===== */
+.calendar-header {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 16px;
+margin-bottom: 14px;
+}
+.calendar-header .month-nav {
+font-size: 20px;
+cursor: pointer;
+color: var(--primary-green);
+padding: 4px 10px;
+}
+.calendar-header .current-month {
+font-size: 16px;
+font-weight: 700;
+color: var(--dark-green);
+}
+.calendar-grid {
+display: grid;
+grid-template-columns: repeat(7, 1fr);
+gap: 4px;
+}
+.cal-day-header {
+text-align: center;
+font-size: 11px;
+font-weight: 700;
+color: var(--text-light);
+padding: 6px 0;
+}
+.cal-day {
+text-align: center;
+padding: 8px 0;
+font-size: 12px;
+border-radius: 8px;
+cursor: pointer;
+position: relative;
+min-height: 36px;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+}
+.cal-day.checked {
+background: var(--primary-green);
+color: #fff;
+font-weight: 700;
+}
+.cal-day.today {
+border: 2px solid var(--accent-orange);
+}
+.cal-day .study-time {
+font-size: 8px;
+opacity: 0.8;
+margin-top: 1px;
+}
+
+/* 学习统计 */
+.stats-row {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 12px;
+margin-bottom: 14px;
+}
+.stat-card {
+background: #fff;
+border-radius: var(--radius);
+padding: 16px;
+text-align: center;
+box-shadow: var(--card-shadow);
+}
+.stat-card .stat-value {
+font-size: 28px;
+font-weight: 800;
+color: var(--primary-green);
+}
+.stat-card .stat-label {
+font-size: 11px;
+color: var(--text-light);
+margin-top: 2px;
+}
+
+/* 错题本 */
+.wrong-filter {
+display: flex;
+gap: 8px;
+margin-bottom: 12px;
+flex-wrap: wrap;
+}
+.wrong-filter .filter-btn {
+padding: 6px 14px;
+border-radius: 16px;
+border: 1.5px solid #C8E6C9;
+background: #fff;
+font-size: 12px;
+cursor: pointer;
+color: var(--text-medium);
+}
+.wrong-filter .filter-btn.active {
+background: var(--primary-green);
+color: #fff;
+border-color: var(--primary-green);
+}
+.wrong-item {
+background: #fff;
+border-radius: 12px;
+padding: 14px;
+margin-bottom: 10px;
+box-shadow: var(--card-shadow);
+border-left: 4px solid #EF5350;
+}
+.wrong-item .wrong-cat {
+font-size: 10px;
+color: #EF5350;
+font-weight: 700;
+margin-bottom: 4px;
+}
+.wrong-item .wrong-q {
+font-size: 13px;
+font-weight: 600;
+margin-bottom: 4px;
+}
+.wrong-item .wrong-a {
+font-size: 11px;
+color: var(--text-medium);
+}
+.wrong-item .wrong-del {
+float: right;
+color: #EF5350;
+cursor: pointer;
+font-size: 14px;
+}
+
+/* 模态弹窗 */
+.modal-overlay {
+display: none;
+position: fixed;
+top: 0; left: 0; right: 0; bottom: 0;
+background: rgba(0,0,0,0.4);
+z-index: 1000;
+align-items: center;
+justify-content: center;
+padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal-content {
+background: var(--bg-beige);
+border-radius: 20px;
+padding: 24px;
+max-width: 380px;
+width: 100%;
+max-height: 85vh;
+overflow-y: auto;
+position: relative;
+}
+.modal-close {
+position: absolute;
+top: 12px; right: 14px;
+font-size: 20px;
+cursor: pointer;
+color: var(--text-light);
+z-index: 10;
+background: #fff;
+border-radius: 50%;
+width: 30px; height: 30px;
+display: flex;
+align-items: center;
+justify-content: center;
+box-shadow: var(--card-shadow);
+}
+
+/* 番茄钟弹窗 */
+.pomodoro-modal { text-align: center; }
+.pomodoro-circle {
+position: relative;
+width: 180px;
+height: 180px;
+margin: 0 auto 18px;
+}
+.pomodoro-circle svg { transform: rotate(-90deg); }
+.timer-display {
+position: absolute;
+top: 50%; left: 50%;
+transform: translate(-50%, -50%);
+font-size: 36px;
+font-weight: 800;
+color: var(--dark-green);
+}
+.pomodoro-controls {
+display: flex;
+gap: 12px;
+justify-content: center;
+margin-bottom: 14px;
+}
+.pomodoro-controls button { min-width: 80px; }
+.pomodoro-stats {
+font-size: 13px;
+color: var(--text-medium);
+}
+
+/* 题库弹窗 */
+.quiz-modal { max-width: 400px; }
+
+/* 时间输入 */
+.time-input-row {
+display: flex;
+gap: 12px;
+margin-bottom: 14px;
+}
+.time-input-group {
+flex: 1;
+}
+.time-input-group label {
+display: block;
+font-size: 12px;
+font-weight: 600;
+color: var(--text-medium);
+margin-bottom: 4px;
+}
+.time-input-group input {
+width: 100%;
+border: 1.5px solid #C8E6C9;
+border-radius: 10px;
+padding: 10px;
+font-size: 14px;
+text-align: center;
+background: #FAFFFA;
+outline: none;
+}
+.time-input-group input:focus { border-color: var(--primary-green); }
+
+/* 上传按钮 */
+.upload-btn {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+background: #E8F5E9;
+border: 1.5px dashed var(--primary-green);
+border-radius: 10px;
+padding: 10px 16px;
+font-size: 12px;
+color: var(--dark-green);
+cursor: pointer;
+margin-top: 8px;
+}
+
+/* 综合运用 */
+.zonghe-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 12px;
+}
+.zonghe-card {
+background: #fff;
+border-radius: var(--radius);
+padding: 18px 14px;
+text-align: center;
+box-shadow: var(--card-shadow);
+cursor: pointer;
+transition: all 0.2s;
+border: 1.5px solid transparent;
+}
+.zonghe-card:hover {
+border-color: var(--light-green);
+transform: translateY(-2px);
+}
+.zonghe-card .zc-icon { font-size: 28px; display: block; margin-bottom: 6px; }
+.zonghe-card h4 { font-size: 13px; font-weight: 700; color: var(--text-dark); }
+
+/* 倒计时设置 */
+.countdown-set {
+margin-bottom: 12px;
+}
+.countdown-set label {
+font-size: 12px;
+font-weight: 600;
+color: var(--text-medium);
+margin-right: 8px;
+}
+.countdown-set input {
+border: 1.5px solid #C8E6C9;
+border-radius: 8px;
+padding: 6px 10px;
+font-size: 13px;
+background: #FAFFFA;
+outline: none;
+}
+
+/* 小标签 */
+.tag {
+display: inline-block;
+padding: 2px 8px;
+border-radius: 10px;
+font-size: 10px;
+font-weight: 600;
+margin-left: 6px;
+}
+.tag-green { background: #E8F5E9; color: var(--dark-green); }
+.tag-orange { background: #FFF3E0; color: #E65100; }
+
+/* 分隔线 */
+.divider {
+height: 1px;
+background: rgba(76,175,80,0.1);
+margin: 12px 0;
+}
+
+/* 空状态 */
+.empty-state {
+text-align: center;
+padding: 30px 20px;
+color: var(--text-light);
+font-size: 13px;
+}
+.empty-state .empty-icon { font-size: 40px; margin-bottom: 8px; display: block; }
+
+/* 提示文字 */
+.hint-text {
+font-size: 11px;
+color: var(--text-light);
+margin-top: 6px;
+line-height: 1.5;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: rgba(76,175,80,0.2); border-radius: 2px; }
+</style>
+<link rel="manifest" href="manifest.json">
+</head>
+<body>
+<div id="app">
+<!-- 左侧导航栏 -->
+<nav id="sidebar">
+<div class="logo">
+<div class="logo-icon">📚</div>
+<div class="logo-text">考公工作台</div>
+</div>
+<div class="nav-group">
+<div class="nav-group-title">倒计时</div>
+</div>
+<div class="nav-group">
+<div class="nav-group-title">主功能</div>
+<div class="nav-item active" data-page="home" data-icon="🏠">首页总览</div>
+</div>
+<div class="nav-group">
+<div class="nav-group-title">📝 行测模块</div>
+<div class="nav-item" data-page="yanyu" data-icon="🗣️">言语理解</div>
+<div class="nav-item" data-page="luoji" data-icon="🧩">逻辑判断</div>
+<div class="nav-item" data-page="shuliang" data-icon="🔢">数量关系</div>
+<div class="nav-item" data-page="ziliao" data-icon="📊">资料分析</div>
+</div>
+<div class="nav-group">
+<div class="nav-group-title">📖 综合模块</div>
+<div class="nav-item" data-page="zhengzhi" data-icon="🏛️">政治理论</div>
+<div class="nav-item" data-page="changshi" data-icon="🌍">常识判断</div>
+<div class="nav-item" data-page="shenlun" data-icon="✍️">申论</div>
+<div class="nav-item" data-page="zonghe" data-icon="🔗">综合运用</div>
+</div>
+<div class="nav-group">
+<div class="nav-group-title">🛠️ 学习工具</div>
+<div class="nav-item" data-page="plan" data-icon="📋">今日计划</div>
+<div class="nav-item" data-page="calendar" data-icon="📅">打卡日历</div>
+<div class="nav-item" data-page="wrong" data-icon="❌">错题本</div>
+<div class="nav-item" data-page="stats" data-icon="📈">学习统计</div>
+</div>
+</nav>
+
+<!-- 主内容区 -->
+<main id="content">
+<!-- 首页总览 -->
+<div class="page active" id="page-home">
+<div class="desktop-header">
+<div class="desktop-time" id="desktopTime"></div>
+<div class="desktop-date" id="desktopDate"></div>
+<div class="checkin-btn" id="desktopCheckin">📍 每日打卡</div>
+<div class="daily-quote" id="dailyQuote"></div>
+</div>
+<div class="countdown-banner" id="countdownBanner"></div>
+<div class="module-grid">
+<div class="module-card" data-target="yanyu">
+<span class="card-icon">🗣️</span>
+<h3>言语理解</h3>
+<p id="progress-yanyu">今日进度 0%</p>
+</div>
+<div class="module-card" data-target="luoji">
+<span class="card-icon">🧩</span>
+<h3>逻辑判断</h3>
+<p id="progress-luoji">今日进度 0%</p>
+</div>
+<div class="module-card" data-target="shuliang">
+<span class="card-icon">🔢</span>
+<h3>数量关系</h3>
+<p id="progress-shuliang">今日进度 0%</p>
+</div>
+<div class="module-card" data-target="ziliao">
+<span class="card-icon">📊</span>
+<h3>资料分析</h3>
+<p id="progress-ziliao">今日进度 0%</p>
+</div>
+<div class="module-card" data-target="zhengzhi">
+<span class="card-icon">🏛️</span>
+<h3>政治理论</h3>
+<p id="progress-zhengzhi">今日进度 0%</p>
+</div>
+<div class="module-card" data-target="changshi">
+<span class="card-icon">🌍</span>
+<h3>常识判断</h3>
+<p id="progress-changshi">今日进度 0%</p>
+</div>
+<div class="module-card" data-target="shenlun">
+<span class="card-icon">✍️</span>
+<h3>申论</h3>
+<p id="progress-shenlun">今日进度 0%</p>
+</div>
+<div class="module-card" data-target="plan">
+<span class="card-icon">📋</span>
+<h3>今日计划</h3>
+<p>查看计划</p>
+</div>
+</div>
+</div>
+
+<!-- 通用模块页面模板 -->
+<div class="page" id="page-yanyu"></div>
+<div class="page" id="page-luoji"></div>
+<div class="page" id="page-shuliang"></div>
+<div class="page" id="page-ziliao"></div>
+<div class="page" id="page-zhengzhi"></div>
+<div class="page" id="page-changshi"></div>
+<div class="page" id="page-shenlun"></div>
+<div class="page" id="page-zonghe"></div>
+<div class="page" id="page-plan"></div>
+<div class="page" id="page-calendar"></div>
+<div class="page" id="page-wrong"></div>
+<div class="page" id="page-stats"></div>
+</main>
+</div>
+
+<!-- 番茄钟弹窗 -->
+<div class="modal-overlay" id="pomodoroModal">
+<div class="modal-content pomodoro-modal">
+<button class="modal-close" onclick="closePomodoro()">✕</button>
+<div class="pomodoro-circle">
+<svg viewBox="0 0 200 200" class="progress-ring">
+<circle cx="100" cy="100" r="85" class="ring-bg"/>
+<circle cx="100" cy="100" r="85" class="ring-progress" id="ringProgress"/>
+</svg>
+<div class="timer-display" id="timerDisplay">25:00</div>
+</div>
+<div class="pomodoro-controls">
+<button class="btn-primary" id="timerStart">开始</button>
+<button class="btn-secondary" id="timerReset">重置</button>
+</div>
+<div class="pomodoro-stats">
+<span>今日完成: <strong id="todayPomos">0</strong> 个番茄</span>
+</div>
+</div>
+</div>
+
+<!-- 题库弹窗 -->
+<div class="modal-overlay" id="quizModal">
+<div class="modal-content quiz-modal">
+<button class="modal-close" onclick="closeQuiz()">✕</button>
+<div class="quiz-container" id="quizContainer"></div>
+</div>
+</div>
+
+<script>// ===== 题库数据 =====
+const QuizData = {
+// 成语辨析题
+idioms: [
+{
+q: "依次填入划横线部分最恰当的一项是：\n近年来，各种优质文化内容不断涌现，观众的审美水平也在逐步提高。过去那种______的制作方式已经难以满足当下观众的需求。",
+options: ["粗制滥造", "滥竽充数", "鱼目混珠", "华而不实"],
+answer: 0,
+explanation: "粗制滥造：指制作粗劣，不求精良。此处形容过去低质量的制作方式，符合语境。滥竽充数强调以次充好混在好的里面；鱼目混珠强调用假的冒充真的；华而不实强调外表好看内容空泛。"
+},
+{
+q: "填入横线处最恰当的一项是：\n他在工作中始终保持着______的态度，对待每一个细节都力求完美，从不敷衍了事。",
+options: ["一丝不苟", "小心翼翼", "谨小慎微", "精益求精"],
+answer: 0,
+explanation: "一丝不苟：形容做事认真细致，一点儿不马虎。与后文'力求完美''不敷衍了事'呼应最佳。小心翼翼侧重小心；谨小慎微含贬义过分谨慎；精益求精侧重已经很好还要更好。"
+},
+{
+q: "依次填入划横线部分最恰当的一项是：\n这部纪录片______了大量珍贵的历史影像资料，为观众呈现了一个______的时代画卷。",
+options: ["汇集 波澜壮阔", "收集 气势磅礴", "汇聚 浩浩荡荡", "整理 蔚为大观"],
+answer: 0,
+explanation: "汇集与波澜壮阔搭配最佳。汇集强调从各处聚集；波澜壮阔形容声势雄壮或规模宏大，修饰时代画卷恰当。气势磅礴多形容气势；浩浩荡荡多形容人流或水流；蔚为大观强调丰富多彩。"
+},
+{
+q: "填入横线处最恰当的一项是：\n面对突如其来的困难，他没有______，而是迎难而上，最终克服了所有障碍。",
+options: ["畏首畏尾", "退避三舍", "望而却步", "知难而退"],
+answer: 2,
+explanation: "望而却步：看到了危险或困难就往后退缩。与'迎难而上'形成鲜明对比，符合语境。畏首畏尾强调顾虑太多；退避三舍强调主动退让；知难而退强调明智退却，语气较轻。"
+},
+{
+q: "依次填入划横线部分最恰当的一项是：\n中华优秀传统文化______着中华民族最深层的精神追求，______着中华民族独特的精神标识。",
+options: ["承载 彰显", "蕴含 展现", "积淀 体现", "传承 标志"],
+answer: 0,
+explanation: "承载...精神追求，彰显...精神标识，搭配最为恰当。承载强调托着、承受；彰显强调鲜明地显示，多用于抽象事物，语气庄重，适合此类正式表达。"
+},
+{
+q: "填入横线处最恰当的一项是：\n科技创新不能______，必须脚踏实地，一步一个脚印地推进。",
+options: ["好高骛远", "急于求成", "纸上谈兵", "空中楼阁"],
+answer: 0,
+explanation: "好高骛远：比喻不切实际地追求过高过远的目标。与'脚踏实地'形成对比。急于求成强调性急求快；纸上谈兵强调空谈理论；空中楼阁强调虚幻不实。"
+},
+{
+q: "依次填入划横线部分最恰当的一项是：\n基层治理要注重______，从群众最关心、最直接、最现实的利益问题入手，把工作做到群众心坎上。",
+options: ["因地制宜", "对症下药", "标本兼治", "求真务实"],
+answer: 1,
+explanation: "对症下药：针对病症开方用药，比喻针对问题所在采取有效措斿。后文'从...问题入手'提示要针对具体问题，对症下药最贴切。因地制宜侧重根据地方情况；标本兼治侧重治标又治本。"
+},
+{
+q: "填入横线处最恰当的一项是：\n乡村振兴不是______，而是一项长期的历史性任务，需要持续用力、久久为功。",options: ["一蹴而就", "一朝一夕", "轻而易举", "信手拈来"],
+answer: 0,
+explanation: "一蹴而就：踏一步就成功，比喻事情轻而易举，一下子就成功。与'长期''持续用力''久久为功'形成对比。一朝一夕强调时间短；轻而易举强调容易；信手拈来多指写文章。"
+},
+{
+q: "依次填入划横线部分最恰当的一项是：\n数字化改革______，为经济社会发展注入了新动能，也让人民群众有了更多获得感、幸福感、安全感。",
+options: ["如火如荼", "方兴未艾", "蒸蒸日上", "风起云涌"],
+answer: 0,
+explanation: "如火如荼：像火那样红，像荼（茅草的白花）那样白，形容旺盛、热烈或激烈。形容数字化改革的热烈态势恰当。方兴未艾强调正在发展未到止境；蒸蒸日上多形容事业；风起云涌强调变化快。"
+},
+{
+q: "填入横线处最恰当的一项是：\n调查研究是我们党的传家宝，是谋事之基、成事之道，绝不能______。",
+options: ["浅尝辄止", "浮光掠影", "走马观花", "蜻蜓点水"],
+answer: 0,
+explanation: "浅尝辄止：略微尝试一下就停下来，比喻不肯下功夫深入钻研。此处强调调查研究不能只做表面，要深入。浮光掠影、走马观花、蜻蜓点水都偏重观察不深入，但浅尝辄止更强调主观上不愿深入。"
+},
+],
+
+// 政治理论题
+politics: [
+{
+q: "党的二十大报告指出，中国共产党的中心任务是（  ）。",
+options: [
+"团结带领全国各族人民全面建成社会主义现代化强国、实现第二个百年奋斗目标",
+"全面深化改革，推进国家治理体系和治理能力现代化",
+"全面从严治党，确保党长期执政",
+"推动高质量发展，构建新发展格局"
+],
+answer: 0,
+explanation: "党的二十大报告指出：从现在起，中国共产党的中心任务就是团结带领全国各族人民全面建成社会主义现代化强国、实现第二个百年奋斗目标，以中国式现代化全面推进中华民族伟大复兴。"
+},
+{
+q: "中国式现代化的本质要求是（  ）。",
+options: [
+"坚持中国共产党领导，坚持中国特色社会主义",
+"实现高质量发展",
+"发展全过程人民民主",
+"以上都是"
+],
+answer: 3,
+explanation: "中国式现代化的本质要求包括：坚持中国共产党领导，坚持中国特色社会主义，实现高质量发展，发展全过程人民民主，丰富人民精神世界，实现全体人民共同富裕，促进人与自然和谐共生等。以上选项均包含在内。"
+},
+{
+q: "新发展理念是指（  ）。",
+options: [
+"创新、协调、绿色、开放、共享",
+"创新、改革、绿色、开放、协调",
+"发展、协调、绿色、开放、共享",
+"创新、协调、环保、开放、共享"
+],
+answer: 0,
+explanation: "新发展理念即创新、协调、绿色、开放、共享五大发展理念，是习近平新时代中国特色社会主义思想的重要组成部分。"
+},
+{
+q: "构建新发展格局的重心是（  ）。",
+options: [
+"扩大内需",
+"畅通国民经济循环",
+"供给侧结构性改革",
+"高水平对外开放"
+],
+answer: 1,
+explanation: "构建以国内大循环为主体、国内国际双循环相互促进的新发展格局，关键在于经济循环的畅通无阻（畅通国民经济循环）。"
+},
+{
+q: "2024年中央经济工作会议提出，要坚持（  ）的工作总基调。",
+options: [
+"稳中求进",
+"稳中有进",
+"稳中向好",
+"稳中提质"
+],
+answer: 0,
+explanation: "2024年中央经济工作会议明确提出，要坚持稳中求进的工作总基调，完整准确全面贯彻新发展理念。"
+},
+{
+q: "下列关于全过程人民民主的表述，错误的是（  ）。",
+options: [
+"全过程人民民主是最广泛、最真实、最管用的民主",
+"全过程人民民主不包括选举民主",
+"全过程人民民主是全链条、全方位、全覆盖的民主",
+"协商民主是全过程人民民主的重要组成部分"
+],
+answer: 1,
+explanation: "全过程人民民主既包括选举民主，也包括协商民主、社会民主、基层民主等多种形式，选项B表述'不包括选举民主'是错误的。"
+},
+{
+q: "高质量发展是全面建设社会主义现代化国家的（  ）。",
+options: [
+"首要任务",
+"中心任务",
+"根本任务",
+"重要任务"
+],
+answer: 0,
+explanation: "党的二十大报告明确指出：高质量发展是全面建设社会主义现代化国家的首要任务。"
+},
+{
+q: "下列关于共同富裕的表述，正确的是（  ）。",
+options: [
+"共同富裕就是同步富裕、同等富裕",
+"共同富裕要分阶段推进，允许一部分人先富起来",
+"共同富裕意味着消灭一切收入差距",
+"共同富裕只涉及经济层面"
+],
+answer: 1,
+explanation: "共同富裕不是同步富裕、同等富裕，而是允许一部分人、一部分地区先富起来，先富带后富、帮后富，分阶段逐步实现。共同富裕也不意味着没有差距，而是差距合理。"
+},
+{
+q: "新质生产力的特点是（  ）。",
+options: [
+"创新",
+"高科技、高效能、高质量",
+"绿色低碳",
+"数字化"
+],
+answer: 0,
+explanation: "新质生产力的特点是创新，关键在质优，本质是先进生产力。科技创新能够催生新产业、新模式、新动能，是发展新质生产力的核心要素。"
+},
+{
+q: "党的二十届三中全会指出，进一步全面深化改革的总目标是（  ）。",
+options: [
+"继续完善和发展中国特色社会主义制度，推进国家治理体系和治理能力现代化",
+"全面建成小康社会",
+"实现社会主义现代化",
+"构建人类命运共同体"
+],
+answer: 0,
+explanation: "党的二十届三中全会指出，进一步全面深化改革的总目标是继续完善和发展中国特色社会主义制度，推进国家治理体系和治理能力现代化。"
+},
+],
+
+// 常识判断题
+commonsense: [
+{
+q: "下列哪项不属于我国四大发明？（  ）",
+options: ["造纸术", "指南针", "地动仪", "火药"],
+answer: 2,
+explanation: "我国四大发明是造纸术、指南针、火药、印刷术。地动仪是张衡发明的测地震仪器，不属于四大发明。"
+},
+{
+q: "下列关于我国古代科举制度的表述，正确的是（  ）。",
+options: [
+"科举制创立于唐朝",
+"殿试的第一名称之为'状元'",
+"乡试考中者称为'进士'",
+"会试在各省省城举行"
+],
+answer: 1,
+explanation: "科举制创立于隋朝（隋炀帝设进士科）；殿试第一名称状元，正确；乡试考中者称'举人'，会试考中者称'进士'；会试在京城举行，乡试在省城举行。"
+},
+{
+q: "下列哪项不是太阳系八大行星？（  ）",
+options: ["火星", "冥王星", "海王星", "天王星"],
+answer: 1,
+explanation: "2006年国际天文学联合会将冥王星降级为矮行星，太阳系八大行星为：水星、金星、地球、火星、木星、土星、天王星、海王星。"
+},
+{
+q: "下列关于光的说法，错误的是（  ）。",
+options: [
+"光在真空中传播速度最快",
+"光的传播不需要介质",
+"光年是时间单位",
+"光具有波粒二象性"
+],
+answer: 2,
+explanation: "光年是长度（距离）单位，指光在真空中一年时间传播的距离，约为9.46万亿千米，不是时间单位。"
+},
+{
+q: "下列哪项不属于长江经济带覆盖的省份？（  ）",
+options: ["江苏", "云南", "甘肃", "四川"],
+answer: 2,
+explanation: "长江经济带覆盖上海、江苏、浙江、安徽、江西、湖北、湖南、重庆、四川、云南、贵州等11个省市，甘肃不在其中。"
+},
+{
+q: "下列关于中国古代'二十四史'的说法，正确的是（  ）。",
+options: [
+"二十四史都是纪传体史书",
+"《史记》是二十四史之首",
+"二十四史全部由官方修撰",
+"《资治通鉴》属于二十四史"
+],
+answer: 0,
+explanation: "二十四史全部是纪传体史书，从《史记》到《明史》，共二十四部。B也对但不够全面，A更准确涵盖全部。C错（有私修如《史记》）；D错（《资治通鉴》是编年体，不在二十四史之列）。"
+},
+{
+q: "下列关于我国地形的表述，正确的是（  ）。",
+options: [
+"青藏高原是世界上面积最大的高原",
+"珠穆朗玛峰位于我国与印度边境",
+"我国地势西高东低，呈三级阶梯分布",
+"塔里木盆地是我国最大的平原"
+],
+answer: 2,
+explanation: "我国地势西高东低，呈三级阶梯分布，正确。青藏高原是世界上最高的高原但不是面积最大的（面积最大的是巴西高原）；珠峰位于中尼边境；塔里木盆地是最大的盆地不是平原。"
+},
+{
+q: "下列关于人体消化系统的说法，正确的是（  ）。",
+options: [
+"胃是消化和吸收的主要场所",
+"小肠是消化和吸收的主要场所",
+"大肠负责分泌消化酶",
+"肝脏属于消化系统，但不分泌消化液"
+],
+answer: 1,
+explanation: "小肠是消化和吸收的主要场所（长度长、表面积大、消化酶丰富）。胃主要进行蛋白质的初步消化；大肠主要吸收水分；肝脏分泌胆汁（消化液的一种）。"
+},
+{
+q: "下列哪项不是我国的国家级新区？（  ）",
+options: ["浦东新区", "雄安新区", "滨海新区", "苏州工业园"],
+answer: 3,
+explanation: "截至2024年，我国共有19个国家级新区。苏州工业园不是国家级新区，而是中国和新加坡两国政府间合作项目。"
+},
+{
+q: "下列关于经济常识的说法，正确的是（  ）。",
+options: [
+"CPI是衡量通货膨胀的主要指标之一",
+"GDP是衡量一个国家综合国力的最佳指标",
+"货币政策由财政部制定",
+"通货膨胀一定对经济发展有利"
+],
+answer: 0,
+explanation: "CPI（居民消费价格指数）是衡量通货膨胀/紧缩的主要指标之一，正确。GDP不是综合国力的最佳指标（只是经济总量）；货币政策由央行制定（财政部负责财政政策）；适度的通货膨胀可能刺激经济但恶性通胀有害。"
+},
+],
+};
+
+// 成语辨析知识库
+const IdiomKnowledge = [
+{ word: "一蹴而就 vs 一朝一夕", desc: "一蹴而就强调'一下子成功'（动词性，可作谓语）；一朝一夕强调'时间短'（名词性，多作状语）。例：改革不可能一蹴而就；这不是一朝一夕能完成的。" },
+{ word: "潜移默化 vs 耳濡目染", desc: "潜移默化强调'不知不觉中受到影响发生变化'（多用于好的方面，也可是中性的）；耳濡目染强调'因经常听到看到而受到影响'（必须有接触过程）。" },
+{ word: "络绎不绝 vs 川流不息", desc: "两者都形容连续不断。络绎不绝多用于人、车马、船只等往来不断；川流不息多用于行人、车马像水流一样连续不断，使用范围更广。" },
+{ word: "望尘莫及 vs 可望不可即", desc: "望尘莫及强调'远远落后，追赶不上'；可望不可即强调'可以望见但无法接近'，多形容目标高远难以实现。" },
+{ word: "息息相关 vs 休戚相关", desc: "息息相关强调'关系密切'（可用于人或事物）；休戚相关强调'彼此间祸福相关'（多用于人与人之间、团体与团体之间）。" },
+{ word: "因地制宜 vs 因势利导", desc: "因地制宜强调'根据各地具体情况制定适宜的办法'；因势利导强调'顺着事物发展的趋势加以引导'。" },
+{ word: "鱼目混珠 vs 滥竽充数", desc: "鱼目混珠强调'以假充真、以次充好'（假冒伪劣）；滥竽充数强调'没有真才实学的人混在里面充数'或'以次充好凑数'。" },
+{ word: "不谋而合 vs 不约而同", desc: "不谋而合强调'事前没有商量而意见、行动完全一致'（侧重想法、观点）；不约而同强调'没有约定而彼此行动一致'（侧重动作、行为）。" },
+{ word: "独树一帜 vs 别具一格", desc: "独树一帜强调'自成一家，与众不同'（侧重独特、有创新）；别具一格强调'另有一种独特的风格'（侧重风格特别）。" },
+{ word: "推陈出新 vs 革故鼎新", desc: "推陈出新强调'去掉旧事物的糟粕，取其精华，并使它向新的方向发展'（多用于文化、艺术）；革故鼎新强调'革除旧的，创立新的'（多指改朝换代或重大变革）。" },
+];
+
+// 公式库
+const FormulaData = {
+shuliang: [
+{ title: "行程问题 - 基本公式", body: "路程 = 速度 × 时间\nS = v × t\nt = S / v\nv = S / t" },
+{ title: "工程问题", body: "工作总量 = 工作效率 × 工作时间\n合作时间 = 1 / (1/t₁ + 1/t₂ + ...)\n常用赋值法：设总量为1或公倍数" },
+{ title: "利润问题", body: "利润 = 售价 - 成本\n利润率 = 利润 / 成本 × 100%\n售价 = 成本 × (1 + 利润率)\n折扣 = 售价 / 原价" },
+{ title: "排列组合", body: "排列：A(n,m) = n!/(n-m)!\n组合：C(n,m) = n!/[m!(n-m)!]\n错位排列：D₁=0, D₂=1, D₃=2, D₄=9, D₅=44" },
+{ title: "数列求和", body: "等差数列：Sₙ = n(a₁+aₙ)/2 = na₁ + n(n-1)d/2\n等比数列：Sₙ = a₁(1-qⁿ)/(1-q)\n平方和：1²+2²+...+n² = n(n+1)(2n+1)/6" },
+{ title: "几何 - 面积体积", body: "三角形：S = ½ah\n圆：S = πr², C = 2πr\n圆柱：V = πr²h\n圆锥：V = ⅓πr²h\n球：V = 4/3πr³" },
+{ title: "浓度问题", body: "浓度 = 溶质 / 溶液 × 100%\n溶液 = 溶质 + 溶剂\n混合浓度 = (溶质₁+溶质₂) / (溶液₁+溶液₂)" },
+{ title: "年龄问题", body: "核心：年龄差不变\n设现在年龄为x，n年前为(x-n)\n注意：倍数关系随时间变化" },
+],
+ziliao: [
+{ title: "增长率计算", body: "同比增长率 = (本期 - 同期) / 同期 × 100%\n环比增长率 = (本期 - 上期) / 上期 × 100%\n已知增长率r，基期 = 现期 / (1+r)" },
+{ title: "百化分技巧", body: "1/2 = 50%    1/3 ≈ 33.3%\n1/4 = 25%    1/5 = 20%\n1/6 ≈ 16.7%  1/7 ≈ 14.3%\n1/8 = 12.5%  1/9 ≈ 11.1%\n1/11 ≈ 9.1%  1/12 ≈ 8.3%\n1/13 ≈ 7.7%  1/14 ≈ 7.1%\n1/15 ≈ 6.7%  1/16 = 6.25%" },
+{ title: "增长量计算", body: "增长量 = 现期 × r/(1+r)\n当 |r| ≈ 1/n 时：\n增长量 ≈ 现期 / (n+1)\n减少量 ≈ 现期 / (n-1)" },
+{ title: "比重变化", body: "部分增长率 > 整体增长率 → 比重上升\n部分增长率 < 整体增长率 → 比重下降\n比重变化量 = 部分/整体 × (r部分 - r整体)/(1+r部分)" },
+{ title: "倍数与翻番", body: "A是B的n倍 → A = nB\n翻n番 = 2ⁿ倍\n倍数 = 增长率 + 1" },
+{ title: "平均数", body: "平均数 = 总数 / 个数\n平均数的增长率 = (总量增长率 - 个数增长率)/(1+个数增长率)\n十字交叉法求混合平均数" },
+{ title: "基期量/现期量", body: "基期量 = 现期量 / (1+r)\n现期量 = 基期量 × (1+r)\n隔年增长率 = r₁ + r₂ + r₁r₂" },
+{ title: "速算技巧", body: "截位法：保留前2-3位有效数字\n特征数字法：识别特殊分数\n差分法：比较两个分数大小\n直除法：直接做除法取前几位" },
+],
+};
+
+// 百化分练习题
+const BaihuafenData = [
+{ q: "将 1/7 化为百分数（保留一位小数）", a: "14.3%" },
+{ q: "将 3/8 化为百分数", a: "37.5%" },
+{ q: "将 5/6 化为百分数（保留一位小数）", a: "83.3%" },
+{ q: "将 2/9 化为百分数（保留一位小数）", a: "22.2%" },
+{ q: "将 4/11 化为百分数（保留一位小数）", a: "36.4%" },
+{ q: "将 7/12 化为百分数（保留一位小数）", a: "58.3%" },
+{ q: "将 5/16 化为百分数", a: "31.25%" },
+{ q: "将 3/14 化为百分数（保留一位小数）", a: "21.4%" },
+{ q: "将 8/15 化为百分数（保留一位小数）", a: "53.3%" },
+{ q: "将 1/13 化为百分数（保留一位小数）", a: "7.7%" },
+{ q: "若某数增加 1/6，相当于增加约百分之几？", a: "16.7%" },
+{ q: "若某数减少 1/8，相当于减少百分之几？", a: "12.5%" },
+{ q: "将 11/20 化为百分数", a: "55%" },
+{ q: "将 9/40 化为百分数", a: "22.5%" },
+{ q: "将 7/30 化为百分数（保留一位小数）", a: "23.3%" },
+{ q: "若增长率为 25%，相当于增加了几分之几？", a: "1/4" },
+{ q: "将 13/50 化为百分数", a: "26%" },
+{ q: "将 3/22 化为百分数（保留一位小数）", a: "13.6%" },
+{ q: "将 5/18 化为百分数（保留一位小数）", a: "27.8%" },
+{ q: "若减少率为 1/7，约相当于减少百分之几？", a: "14.3%" },
+];
+
+// 申论金句
+const ShenlunQuotes = [
+{ topic: "乡村振兴", text: "民族要复兴，乡村必振兴。要坚持把解决好'三农'问题作为全党工作重中之重，举全党全社会之力推动乡村振兴。" },
+{ topic: "科技创新", text: "科技是第一生产力、人才是第一资源、创新是第一动力。要坚持创新在我国现代化建设全局中的核心地位。" },
+{ topic: "生态文明", text: "绿水青山就是金山银山。保护生态环境就是保护生产力，改善生态环境就是发展生产力。" },
+{ topic: "民生保障", text: "江山就是人民，人民就是江山。中国共产党领导人民打江山、守江山，守的是人民的心。" },
+{ topic: "基层治理", text: "基层治理是国家治理的基石。要健全党组织领导的自治、法治、德治相结合的基层治理体系。" },
+{ topic: "文化自信", text: "中华优秀传统文化是中华文明的智慧结晶和精华所在，是中华民族的根和魂，是我们在世界文化激荡中站稳脚跟的根基。" },
+{ topic: "数字经济", text: "发展数字经济是把握新一轮科技革命和产业变革新机遇的战略选择，是构建现代化经济体系的重要引擎。" },
+{ topic: "高质量发展", text: "高质量发展是全面建设社会主义现代化国家的首要任务。发展是党执政兴国的第一要务。" },
+{ topic: "共同富裕", text: "共同富裕是中国特色社会主义的本质要求，也是一个长期的历史过程。要着力维护和促进社会公平正义。" },
+{ topic: "青年担当", text: "当代中国青年生逢其时，施展才干的舞台无比广阔，实现梦想的前景无比光明。广大青年要立志做有理想、敢担当、能吃苦、肯奋斗的新时代好青年。" },
+{ topic: "依法行政", text: "法治政府建设是全面依法治国的重点任务和主体工程。要推进机构、职能、权限、程序、责任法定化。" },
+{ topic: "改革开放", text: "改革开放是决定当代中国命运的关键一招，也是决定实现'两个一百年'奋斗目标、实现中华民族伟大复兴的关键一招。" },
+];
+
+// 每日激励语录
+const DailyQuotes = [
+"你有多努力，就有多幸运。今天的每一分钟，都在铺就明天的路。📖",
+"种一棵树最好的时间是十年前，其次是现在。加油，备考人！🌱",
+"所有的努力都不会白费，它们都在你看不见的地方默默扎根。💪",
+"距离梦想只有一个坚持的距离。今天的你比昨天更优秀！✨",
+"不积跬步，无以至千里。每一道题目的积累，都是上岸的基石。🧱",
+"别人在刷手机的时候你在刷题，这就是差距的来源。📱➡️📚",
+"公考没有捷径，但坚持就是最好的捷径。🏃‍♂️",
+"每一个不曾起舞的日子，都是对生命的辜负。——今天的努力，未来的答案。🌅",
+"成功的路上并不拥挤，因为坚持的人不多。你已经在路上了！🚀",
+"量变引起质变，今天的每一分钟都在改变命运的天平。⚖️",
+"越努力，越幸运。你想要的，岁月都会给你。🌈",
+"自律者出众，懒散者出局。做那个不一样的自己！🔥",
+"不要等待机会，而要创造机会。每一天的学习都是在创造上岸的机会。💡",
+"天道酬勤，厚积薄发。你走过的每一步都算数！📊",
+];
+
+// 逻辑判断公式/技巧
+const LogicTips = [
+{ title: "翻译推理规则", body: "充分条件：如果A则B → A→B\n必要条件：只有A才B → B→A\n除非A否则B → ¬A→B\n否后必否前，肯前必肯后\n否前无必然，肯后无必然" },
+{ title: "真假话问题", body: "找矛盾关系（必有一真一假）：\n① A与¬A\n② 所有都 vs 有的不\n③ 必然 vs 可能不\n确定真假后，结合其他条件推导" },
+{ title: "加强/削弱论证", body: "加强：建立联系（搭桥）、举例支持、排除他因、必要条件\n削弱：断开联系、因果倒置、另有他因、举反例、否定前提\n优先选直接针对论证关系的选项" },
+{ title: "排列组合（匹配题）", body: "常用方法：\n① 列表法：行列对应排除\n② 连线法：条件逐步满足\n③ 假设法：代入验证\n技巧：从约束最多的元素入手" },
+];
+</script>
+<script>// ===== 工具函数 =====
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => document.querySelectorAll(sel);
+const today = () => new Date().toISOString().slice(0, 10);
+const now = () => new Date();
+
+// 本地存储封装
+const Store = {
+get(key, def) {
+try { return JSON.parse(localStorage.getItem('kaogong_' + key)) || def; }
+catch(e) { return def; }
+},
+set(key, val) { localStorage.setItem('kaogong_' + key, JSON.stringify(val)); },
+};
+
+// 考试倒计时日期（可修改）
+let examDate = Store.get('examDate', '2026-12-05');
+
+// ===== 页面导航 =====
+function navigate(page) {
+$$('.page').forEach(p => p.classList.remove('active'));
+$('#page-' + page).classList.add('active');
+$$('.nav-item').forEach(n => n.classList.remove('active'));
+const navItem = document.querySelector(`.nav-item[data-page="${page}"]`);
+if (navItem) navItem.classList.add('active');
+renderPage(page);
+window.scrollTo(0, 0);
+}
+
+// ===== 渲染各页面 =====
+function renderPage(page) {
+const el = $('#page-' + page);
+if (el.dataset.rendered === '1') return; // 已渲染则跳过
+
+switch(page) {
+case 'yanyu': renderStudyPage(el, '言语理解', '🗣️', { quiz: true, quizData: QuizData.idioms, idiomBoard: true, formulas: null }); break;
+case 'luoji': renderStudyPage(el, '逻辑判断', '🧩', { quiz: false, quizData: null, idiomBoard: false, formulas: 'logic' }); break;
+case 'shuliang': renderStudyPage(el, '数量关系', '🔢', { quiz: false, quizData: null, idiomBoard: false, formulas: 'shuliang' }); break;
+case 'ziliao': renderStudyPage(el, '资料分析', '📊', { quiz: false, quizData: null, idiomBoard: false, formulas: 'ziliao', baihuafen: true }); break;
+case 'zhengzhi': renderStudyPage(el, '政治理论', '🏛️', { quiz: true, quizData: QuizData.politics, idiomBoard: false, formulas: null }); break;
+case 'changshi': renderStudyPage(el, '常识判断', '🌍', { quiz: true, quizData: QuizData.commonsense, idiomBoard: false, formulas: null }); break;
+case 'shenlun': renderShenlun(el); break;
+case 'zonghe': renderZonghe(el); break;
+case 'plan': renderPlan(el); break;
+case 'calendar': renderCalendar(el); break;
+case 'wrong': renderWrong(el); break;
+case 'stats': renderStats(el); break;
+}
+el.dataset.rendered = '1';
+}
+
+// 学习类页面通用渲染
+function renderStudyPage(el, title, icon, opts) {
+let html = `
+<div class="page-header">
+<span class="back-btn" onclick="navigate('home')">‹</span>
+<h2>${icon} ${title}</h2>
+<button class="btn-primary" style="margin-left:auto;padding:6px 14px;font-size:12px;" onclick="openPomodoro('${opts.quiz ? 'study' : 'study'}')">🍅 番茄钟</button>
+</div>`;
+
+// 番茄钟圆环
+html += `
+<div class="page-section tomato-section">
+<h3>🍅 今日番茄钟</h3>
+<div class="tomato-ring-container">
+<svg viewBox="0 0 200 200">
+<circle cx="100" cy="100" r="85" class="ring-bg"/>
+<circle cx="100" cy="100" r="85" class="ring-progress" id="ring-${title}"/>
+</svg>
+<div class="ring-label">
+<div class="ring-number" id="ringNum-${title}">0</div>
+<div class="ring-text">个番茄</div>
+</div>
+</div>
+<button class="tomato-btn" onclick="openPomodoro('${title}')">开始专注</button>
+</div>`;
+
+// 每日进度
+const progress = getDailyProgress(title);
+html += `
+<div class="page-section">
+<h3>📊 每日学习进度</h3>
+<div class="progress-bar"><div class="progress-bar-fill" style="width:${progress}%"></div></div>
+<div class="progress-text">今日完成 <strong>${progress}%</strong> | 目标：4个番茄钟 / 或完成练习</div>
+</div>`;
+
+// 待办事项
+html += `
+<div class="page-section">
+<h3>✅ 待办事项</h3>
+<div class="todo-input-row">
+<input class="todo-input" id="todoInput-${title}" placeholder="添加今日待办..." onkeypress="if(event.key==='Enter')addTodo('${title}')">
+<button class="btn-add" onclick="addTodo('${title}')">添加</button>
+</div>
+<div id="todoList-${title}"></div>
+</div>`;
+
+// 题库（如果有）
+if (opts.quiz) {
+html += `
+<div class="page-section">
+<h3>📝 每日练习</h3>
+<button class="btn-primary btn-full" onclick="startQuiz('${title}', '${opts.quizData === QuizData.idioms ? 'idioms' : opts.quizData === QuizData.politics ? 'politics' : 'commonsense'}')">开始答题（10题）</button>
+</div>`;
+}
+
+// 成语辨析板块（言语理解专属）
+if (opts.idiomBoard) {
+html += `<div class="page-section"><h3>📚 成语辨析知识库</h3>`;
+IdiomKnowledge.forEach(item => {
+html += `<div class="idiom-pair"><div class="idiom-words">${item.word}</div><div class="idiom-desc">${item.desc}</div></div>`;
+});
+html += `</div>`;
+}
+
+// 公式板块
+if (opts.formulas === 'shuliang') {
+html += `<div class="page-section"><h3>📐 数量关系公式</h3>`;
+FormulaData.shuliang.forEach(f => {
+html += `<div class="formula-card"><div class="formula-title">${f.title}</div><div class="formula-body">${f.body.replace(/\n/g,'<br>')}</div></div>`;
+});
+html += `</div>`;
+}
+if (opts.formulas === 'ziliao') {
+html += `<div class="page-section"><h3>📐 资料分析公式</h3>`;
+FormulaData.ziliao.forEach(f => {
+html += `<div class="formula-card"><div class="formula-title">${f.title}</div><div class="formula-body">${f.body.replace(/\n/g,'<br>')}</div></div>`;
+});
+html += `</div>`;
+}
+if (opts.formulas === 'logic') {
+html += `<div class="page-section"><h3>🧠 逻辑判断技巧</h3>`;
+LogicTips.forEach(f => {
+html += `<div class="formula-card"><div class="formula-title">${f.title}</div><div class="formula-body">${f.body.replace(/\n/g,'<br>')}</div></div>`;
+});
+html += `</div>`;
+}
+
+// 百化分练习（资料分析专属）
+if (opts.baihuafen) {
+html += `
+<div class="page-section">
+<h3>🔢 百化分每日练习</h3>
+<button class="btn-primary btn-full" onclick="startBaihuafen()">开始今日百化分练习</button>
+</div>`;
+}
+
+el.innerHTML = html;
+renderTodos(title);
+updateTomatoRing(title);
+}
+
+// 申论页面
+function renderShenlun(el) {
+const quote = ShenlunQuotes[Math.floor(Math.random() * ShenlunQuotes.length)];
+el.innerHTML = `
+<div class="page-header">
+<span class="back-btn" onclick="navigate('home')">‹</span>
+<h2>✍️ 申论</h2>
+<button class="btn-primary" style="margin-left:auto;padding:6px 14px;font-size:12px;" onclick="openPomodoro('shenlun')">🍅 番茄钟</button>
+</div>
+<div class="page-section">
+<h3>📊 今日学习进度</h3>
+<div class="progress-bar"><div class="progress-bar-fill" style="width:${getDailyProgress('申论')}%"></div></div>
+<div class="progress-text">今日完成 <strong>${getDailyProgress('申论')}%</strong></div>
+</div>
+<div class="page-section">
+<h3>✅ 待办事项</h3>
+<div class="todo-input-row">
+<input class="todo-input" id="todoInput-申论" placeholder="添加今日待办..." onkeypress="if(event.key==='Enter')addTodo('申论')">
+<button class="btn-add" onclick="addTodo('申论')">添加</button>
+</div>
+<div id="todoList-申论"></div>
+</div>
+<div class="page-section">
+<h3>📝 小题练习</h3>
+<button class="btn-primary btn-full" onclick="startQuiz('申论', 'commonsense')">开始小题练习（10题）</button>
+<div class="hint-text">涵盖归纳概括、综合分析、提出对策等题型</div>
+</div>
+<div class="page-section">
+<h3>🏆 今日大作文金句</h3>
+<div class="golden-sentence">
+<div class="gs-topic">【${quote.topic}】</div>
+<div class="gs-text">${quote.text}</div>
+</div>
+<button class="btn-secondary btn-full" onclick="refreshQuote(this)">🔄 换一句</button>
+</div>
+`;
+renderTodos('申论');
+}
+
+// 综合运用页面
+function renderZonghe(el) {
+el.innerHTML = `
+<div class="page-header">
+<span class="back-btn" onclick="navigate('home')">‹</span>
+<h2>🔗 综合运用</h2>
+</div>
+<div class="zonghe-grid">
+<div class="zonghe-card" onclick="navigate('yanyu')">
+<span class="zc-icon">🗣️</span><h4>言语理解</h4>
+</div>
+<div class="zonghe-card" onclick="navigate('luoji')">
+<span class="zc-icon">🧩</span><h4>逻辑判断</h4>
+</div>
+<div class="zonghe-card" onclick="navigate('shuliang')">
+<span class="zc-icon">🔢</span><h4>数量关系</h4>
+</div>
+<div class="zonghe-card" onclick="navigate('ziliao')">
+<span class="zc-icon">📊</span><h4>资料分析</h4>
+</div>
+<div class="zonghe-card" onclick="navigate('zhengzhi')">
+<span class="zc-icon">🏛️</span><h4>政治理论</h4>
+</div>
+<div class="zonghe-card" onclick="navigate('changshi')">
+<span class="zc-icon">🌍</span><h4>常识判断</h4>
+</div>
+<div class="zonghe-card" onclick="navigate('shenlun')">
+<span class="zc-icon">✍️</span><h4>申论</h4>
+</div>
+<div class="zonghe-card" onclick="showAllFormulas()">
+<span class="zc-icon">📐</span><h4>全部公式速查</h4>
+</div>
+</div>
+`;
+}
+
+// 今日计划
+function renderPlan(el) {
+el.innerHTML = `
+<div class="page-header">
+<span class="back-btn" onclick="navigate('home')">‹</span>
+<h2>📋 今日计划</h2>
+</div>
+<div class="page-section">
+<h3>🕐 学习时间设置</h3>
+<div class="time-input-row">
+<div class="time-input-group">
+<label>开始时间</label>
+<input type="time" id="startTime" value="${Store.get('startTime','08:00')}" onchange="Store.set('startTime',this.value)">
+</div>
+<div class="time-input-group">
+<label>结束时间</label>
+<input type="time" id="endTime" value="${Store.get('endTime','22:00')}" onchange="Store.set('endTime',this.value)">
+</div>
+</div>
+</div>
+<div class="page-section">
+<h3>📝 今日待办清单</h3>
+<div class="todo-input-row">
+<input class="todo-input" id="todoInput-plan" placeholder="添加计划..." onkeypress="if(event.key==='Enter')addTodo('plan')">
+<button class="btn-add" onclick="addTodo('plan')">添加</button>
+</div>
+<div id="todoList-plan"></div>
+</div>
+<div class="page-section">
+<h3>📊 今日各模块进度</h3>
+${['言语理解','逻辑判断','数量关系','资料分析','政治理论','常识判断','申论'].map(m => `
+<div style="margin-bottom:8px;">
+<strong style="font-size:12px;">${m}</strong>
+<div class="progress-bar"><div class="progress-bar-fill" style="width:${getDailyProgress(m)}%"></div></div>
+</div>
+`).join('')}
+</div>
+`;
+renderTodos('plan');
+}
+
+// 打卡日历
+function renderCalendar(el) {
+const currentMonth = Store.get('calMonth', new Date().getMonth());
+const currentYear = Store.get('calYear', new Date().getFullYear());
+const checkins = Store.get('checkins', {}); // {date: {time: minutes}}
+
+let html = `
+<div class="page-header">
+<span class="back-btn" onclick="navigate('home')">‹</span>
+<h2>📅 打卡日历</h2>
+</div>
+<div class="page-section">
+<h3>📍 每日打卡</h3>
+<div class="countdown-set">
+<label>开始学习时间：</label><input type="time" value="${Store.get('startTime','08:00')}" onchange="Store.set('startTime',this.value)">
+</div>
+<div class="countdown-set">
+<label>结束学习时间：</label><input type="time" value="${Store.get('endTime','22:00')}" onchange="Store.set('endTime',this.value)">
+</div>
+<button class="btn-primary btn-full" id="checkinBtnCal" onclick="doCheckin()">📍 今日打卡（每日限一次）</button>
+<div class="hint-text">打卡时间：${checkins[today()] ? checkins[today()].time : '尚未打卡'}</div>
+</div>
+<div class="page-section">
+<div class="calendar-header">
+<span class="month-nav" onclick="changeMonth(-1)">‹</span>
+<span class="current-month">${currentYear}年${currentMonth+1}月</span>
+<span class="month-nav" onclick="changeMonth(1)">›</span>
+</div>
+<div class="calendar-grid" id="calGrid"></div>
+</div>
+`;
+el.innerHTML = html;
+renderCalGrid(currentMonth, currentYear);
+}
+
+function renderCalGrid(month, year) {
+const grid = $('#calGrid');
+if (!grid) return;
+const firstDay = new Date(year, month, 1).getDay();
+const daysInMonth = new Date(year, month + 1, 0).getDate();
+const checkins = Store.get('checkins', {});
+const today_date = today();
+
+let html = '';
+['日','一','二','三','四','五','六'].forEach(d => {
+html += `<div class="cal-day-header">${d}</div>`;
+});
+for (let i = 0; i < firstDay; i++) html += `<div></div>`;
+for (let d = 1; d <= daysInMonth; d++) {
+const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+const isChecked = !!checkins[dateStr];
+const isToday = dateStr === today_date;
+const cls = `cal-day${isChecked ? ' checked' : ''}${isToday ? ' today' : ''}`;
+html += `<div class="${cls}">${d}${isChecked ? '<br>✓' : ''}</div>`;
+}
+grid.innerHTML = html;
+}
+
+function changeMonth(delta) {
+let m = Store.get('calMonth', new Date().getMonth());
+let y = Store.get('calYear', new Date().getFullYear());
+m += delta;
+if (m > 11) { m = 0; y++; }
+if (m < 0) { m = 11; y--; }
+Store.set('calMonth', m);
+Store.set('calYear', y);
+renderCalendar($('#page-calendar'));
+$('#page-calendar').dataset.rendered = '1';
+renderCalendar($('#page-calendar'));
+}
+
+// 错题本
+function renderWrong(el) {
+const wrongs = Store.get('wrongs', []);
+const cats = ['全部', '言语理解', '政治理论', '常识判断', '申论'];
+const currentFilter = Store.get('wrongFilter', '全部');
+let html = `
+<div class="page-header">
+<span class="back-btn" onclick="navigate('home')">‹</span>
+<h2>❌ 错题本</h2>
+</div>
+<div class="wrong-filter">
+${cats.map(c => `<span class="filter-btn ${c===currentFilter?'active':''}" onclick="filterWrong('${c}')">${c}</span>`).join('')}
+</div>
+<div class="page-section">
+<h3>📷 拍照/上传错题</h3>
+<label class="upload-btn">
+📷 拍照或从相册选择
+<input type="file" accept="image/*" capture="camera" style="display:none;" onchange="uploadWrongImage(event)">
+</label>
+<div class="hint-text">支持拍照或从相册上传图片，自动添加到错题本</div>
+</div>
+<div id="wrongList"></div>
+`;
+el.innerHTML = html;
+renderWrongList();
+}
+
+function renderWrongList() {
+const wrongs = Store.get('wrongs', []);
+const filter = Store.get('wrongFilter', '全部');
+const list = $('#wrongList');
+if (!list) return;
+let filtered = wrongs;
+if (filter !== '全部') filtered = wrongs.filter(w => w.cat === filter);
+
+if (filtered.length === 0) {
+list.innerHTML = `<div class="empty-state"><span class="empty-icon">📭</span>暂无错题，继续加油！</div>`;
+return;
+}
+list.innerHTML = filtered.map((w, i) => `
+<div class="wrong-item">
+<span class="wrong-del" onclick="deleteWrong(${wrongs.indexOf(w)})">🗑️</span>
+<div class="wrong-cat">${w.cat}</div>
+${w.image ? `<img src="${w.image}" style="max-width:100%;border-radius:8px;margin:6px 0;">` : ''}
+<div class="wrong-q">${w.q}</div>
+<div class="wrong-a">正确答案：${w.a}<br>${w.exp || ''}</div>
+</div>
+`).join('');
+}
+
+function filterWrong(cat) {
+Store.set('wrongFilter', cat);
+renderWrong($('#page-wrong'));
+$('#page-wrong').dataset.rendered = '1';
+renderWrong($('#page-wrong'));
+}
+
+function deleteWrong(idx) {
+const wrongs = Store.get('wrongs', []);
+wrongs.splice(idx, 1);
+Store.set('wrongs', wrongs);
+renderWrongList();
+}
+
+function uploadWrongImage(e) {
+const file = e.target.files[0];
+if (!file) return;
+const reader = new FileReader();
+reader.onload = function(ev) {
+const wrongs = Store.get('wrongs', []);
+wrongs.unshift({
+cat: Store.get('wrongFilter', '全部') === '全部' ? '言语理解' : Store.get('wrongFilter', '全部'),
+q: '图片上传错题',
+a: '',
+exp: '',
+image: ev.target.result,
+date: today()
+});
+Store.set('wrongs', wrongs);
+renderWrongList();
+};
+reader.readAsDataURL(file);
+}
+
+// 学习统计
+function renderStats(el) {
+const pomoStats = Store.get('pomoStats', {}); // {date: count}
+const checkins = Store.get('checkins', {});
+const dates = Object.keys(pomoStats).sort();
+const totalPomos = dates.reduce((s, d) => s + (pomoStats[d] || 0), 0);
+const studyDays = dates.length;
+const avgPomos = studyDays > 0 ? (totalPomos / studyDays).toFixed(1) : 0;
+
+// 近7天数据
+const last7 = [];
+for (let i = 6; i >= 0; i--) {
+const d = new Date();
+d.setDate(d.getDate() - i);
+const ds = d.toISOString().slice(0,10);
+last7.push({ date: ds.slice(5), count: pomoStats[ds] || 0 });
+}
+
+const maxCount = Math.max(...last7.map(d => d.count), 1);
+
+let html = `
+<div class="page-header">
+<span class="back-btn" onclick="navigate('home')">‹</span>
+<h2>📈 学习统计</h2>
+</div>
+<div class="stats-row">
+<div class="stat-card"><div class="stat-value">${totalPomos}</div><div class="stat-label">累计番茄钟</div></div>
+<div class="stat-card"><div class="stat-value">${studyDays}</div><div class="stat-label">学习天数</div></div>
+<div class="stat-card"><div class="stat-value">${avgPomos}</div><div class="stat-label">日均番茄</div></div>
+<div class="stat-card"><div class="stat-value">${Object.keys(checkins).length}</div><div class="stat-label">打卡天数</div></div>
+</div>
+<div class="page-section">
+<h3>📊 近7天番茄钟</h3>
+<div style="display:flex;align-items:flex-end;gap:8px;height:140px;padding:10px 4px;">
+${last7.map(d => `
+<div style="flex:1;text-align:center;">
+<div style="background:var(--primary-green);border-radius:4px 4px 0 0;height:${d.count/maxCount*100}px;min-height:4px;transition:height 0.5s;"></div>
+<div style="font-size:9px;color:var(--text-light);margin-top:4px;">${d.date}</div>
+<div style="font-size:11px;font-weight:700;color:var(--dark-green);">${d.count}</div>
+</div>
+`).join('')}
+</div>
+</div>
+<div class="page-section">
+<h3>⚙️ 数据管理</h3>
+<button class="btn-secondary btn-full" onclick="resetDaily()">🔄 重置今日数据</button>
+<button class="btn-secondary btn-full" style="margin-top:8px;" onclick="resetAll()">⚠️ 清空所有数据</button>
+<div class="hint-text">数据保存在本地浏览器中，不会上传服务器</div>
+</div>
+`;
+el.innerHTML = html;
+}
+
+// ===== 番茄钟 =====
+let timerInterval = null;
+let timerSeconds = 25 * 60;
+let timerRunning = false;
+let currentModule = '';
+
+function openPomodoro(module) {
+currentModule = module;
+$('#pomodoroModal').classList.add('active');
+updateTodayPomoCount();
+}
+
+function closePomodoro() {
+$('#pomodoroModal').classList.remove('active');
+pauseTimer();
+}
+
+function startTimer() {
+if (timerRunning) return;
+timerRunning = true;
+$('#timerStart').textContent = '暂停';
+timerInterval = setInterval(() => {
+timerSeconds--;
+if (timerSeconds <= 0) {
+completePomodoro();
+return;
+}
+updateTimerDisplay();
+}, 1000);
+}
+
+function pauseTimer() {
+timerRunning = false;
+$('#timerStart').textContent = '开始';
+clearInterval(timerInterval);
+}
+
+function resetTimer() {
+pauseTimer();
+timerSeconds = 25 * 60;
+updateTimerDisplay();
+}
+
+function updateTimerDisplay() {
+const m = Math.floor(timerSeconds / 60);
+const s = timerSeconds % 60;
+$('#timerDisplay').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function completePomodoro() {
+pauseTimer();
+timerSeconds = 25 * 60;
+updateTimerDisplay();
+
+// 记录
+const pomoStats = Store.get('pomoStats', {});
+pomoStats[today()] = (pomoStats[today()] || 0) + 1;
+Store.set('pomoStats', pomoStats);
+
+// 更新模块进度
+updateModuleProgress(currentModule, 25); // 每个番茄钟贡献25%
+updateTodayPomoCount();
+updateHomeProgress();
+
+alert('🎉 完成一个番茄钟！休息一下吧~');
+}
+
+function updateTodayPomoCount() {
+const pomoStats = Store.get('pomoStats', {});
+$('#todayPomos').textContent = pomoStats[today()] || 0;
+}
+
+// ===== 待办事项 =====
+function addTodo(module) {
+const input = $(`#todoInput-${module}`);
+if (!input || !input.value.trim()) return;
+const todos = Store.get(`todos_${module}`, []);
+todos.push({ text: input.value.trim(), done: false });
+Store.set(`todos_${module}`, todos);
+input.value = '';
+renderTodos(module);
+updateHomeProgress();
+}
+
+function toggleTodo(module, idx) {
+const todos = Store.get(`todos_${module}`, []);
+todos[idx].done = !todos[idx].done;
+Store.set(`todos_${module}`, todos);
+renderTodos(module);
+updateModuleProgress(module, null);
+updateHomeProgress();
+}
+
+function deleteTodoItem(module, idx) {
+const todos = Store.get(`todos_${module}`, []);
+todos.splice(idx, 1);
+Store.set(`todos_${module}`, todos);
+renderTodos(module);
+}
+
+function renderTodos(module) {
+const list = $(`#todoList-${module}`);
+if (!list) return;
+const todos = Store.get(`todos_${module}`, []);
+if (todos.length === 0) {
+list.innerHTML = '<div class="empty-state" style="padding:14px;">📝 暂无待办，添加一个吧！</div>';
+return;
+}
+list.innerHTML = todos.map((t, i) => `
+<div class="todo-item">
+<span class="todo-check ${t.done?'checked':''}" onclick="toggleTodo('${module}',${i})">${t.done?'✓':''}</span>
+<span class="todo-text ${t.done?'done':''}">${t.text}</span>
+<span class="todo-delete" onclick="deleteTodoItem('${module}',${i})">✕</span>
+</div>
+`).join('');
+}
+
+// ===== 模块进度 =====
+function getDailyProgress(module) {
+const pomoStats = Store.get('pomoStats', {});
+const todos = Store.get(`todos_${module}`, []);
+const totalTodos = todos.length;
+const doneTodos = todos.filter(t => t.done).length;
+const pomoCount = pomoStats[today()] || 0;
+
+let progress = 0;
+if (pomoCount >= 4) progress += 50;
+else progress += (pomoCount / 4) * 50;
+if (totalTodos > 0) {
+progress += (doneTodos / totalTodos) * 50;
+} else {
+progress += pomoCount > 0 ? 25 : 0;
+}
+return Math.min(Math.round(progress), 100);
+}
+
+function updateModuleProgress(module, pomoBonus) {
+// 进度由getDailyProgress动态计算
+updateHomeProgress();
+}
+
+// ===== 首页更新 =====
+function updateHomeProgress() {
+const modules = ['yanyu','luoji','shuliang','ziliao','zhengzhi','changshi','shenlun'];
+const nameMap = { yanyu:'言语理解', luoji:'逻辑判断', shuliang:'数量关系', ziliao:'资料分析', zhengzhi:'政治理论', changshi:'常识判断', shenlun:'申论' };
+modules.forEach(m => {
+const el = $(`#progress-${m}`);
+if (el) el.textContent = `今日进度 ${getDailyProgress(nameMap[m])}%`;
+});
+}
+
+// ===== 倒计时 =====
+function updateCountdown() {
+const exam = new Date(examDate);
+const now = new Date();
+const diff = Math.ceil((exam - now) / (1000 * 60 * 60 * 24));
+const banner = $('#countdownBanner');
+if (banner) {
+banner.innerHTML = `
+<span class="cd-icon">⏰</span>
+<div>
+<div class="cd-text">距离国考还有</div>
+<div style="font-size:11px;color:#BF360C;">目标日：${examDate}</div>
+</div>
+<div class="cd-days">${diff > 0 ? diff : 0}天</div>
+`;
+}
+}
+
+// ===== 时钟 =====
+function updateClock() {
+const now = new Date();
+const timeStr = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+const dateStr = now.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+const t = $('#desktopTime');
+const d = $('#desktopDate');
+if (t) t.textContent = timeStr;
+if (d) d.textContent = dateStr;
+}
+
+// ===== 每日激励 =====
+function updateDailyQuote() {
+const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+const quote = DailyQuotes[dayOfYear % DailyQuotes.length];
+const el = $('#dailyQuote');
+if (el) el.textContent = `"${quote}"`;
+}
+
+// ===== 打卡 =====
+function doCheckin() {
+const checkins = Store.get('checkins', {});
+if (checkins[today()]) {
+alert('今天已经打卡过了，每天只能打卡一次哦~ 📍');
+return;
+}
+const now = new Date();
+const startTime = Store.get('startTime', '08:00');
+const endTime = Store.get('endTime', '22:00');
+checkins[today()] = {
+time: `${startTime} - ${endTime}`,
+checkinTime: now.toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'}),
+pomos: Store.get('pomoStats', {})[today()] || 0
+};
+Store.set('checkins', checkins);
+alert('🎉 打卡成功！今天也要加油哦~');
+renderCalendar($('#page-calendar'));
+$('#page-calendar').dataset.rendered = '1';
+renderCalendar($('#page-calendar'));
+}
+
+// ===== 题库 =====
+function startQuiz(module, dataType) {
+const data = QuizData[dataType] || QuizData.idioms;
+// 随机打乱，取10题
+const shuffled = [...data].sort(() => Math.random() - 0.5).slice(0, 10);
+let currentQ = 0;
+let score = 0;
+const userAnswers = [];
+
+const container = $('#quizContainer');
+$('#quizModal').classList.add('active');
+
+function renderQuestion() {
+if (currentQ >= shuffled.length) {
+renderResult();
+return;
+}
+const item = shuffled[currentQ];
+container.innerHTML = `
+<div style="margin-bottom:12px;">
+<span class="tag tag-green">第 ${currentQ+1}/${shuffled.length} 题</span>
+<span class="tag tag-orange">${dataType === 'idioms' ? '成语辨析' : dataType === 'politics' ? '政治理论' : dataType === 'commonsense' ? '常识判断' : '申论'}</span>
+</div>
+<div class="quiz-question">
+<div class="quiz-q-text">${item.q.replace(/\n/g,'<br>')}</div>
+${item.options.map((opt, i) => `<div class="quiz-option" data-idx="${i}" onclick="selectOption(${i})">${String.fromCharCode(65+i)}. ${opt}</div>`).join('')}
+</div>
+<button class="btn-primary btn-full" id="quizSubmit" onclick="submitAnswer()" disabled>提交答案</button>
+`;
+}
+
+window.selectOption = function(idx) {
+$$('.quiz-option').forEach(o => o.classList.remove('selected'));
+document.querySelector(`.quiz-option[data-idx="${idx}"]`).classList.add('selected');
+$('#quizSubmit').disabled = false;
+window._currentAnswer = idx;
+};
+
+window.submitAnswer = function() {
+const item = shuffled[currentQ];
+const selected = window._currentAnswer;
+const isCorrect = selected === item.answer;
+if (isCorrect) score++;
+
+// 保存到错题本（如果答错）
+if (!isCorrect) {
+const wrongs = Store.get('wrongs', []);
+wrongs.unshift({
+cat: dataType === 'idioms' ? '言语理解' : dataType === 'politics' ? '政治理论' : dataType === 'commonsense' ? '常识判断' : '申论',
+q: item.q,
+a: String.fromCharCode(65 + item.answer) + '. ' + item.options[item.answer],
+exp: item.explanation,
+date: today()
+});
+Store.set('wrongs', wrongs);
+}
+
+// 显示解析
+container.innerHTML = `
+<div class="quiz-question">
+<div class="quiz-q-text">${item.q.replace(/\n/g,'<br>')}</div>
+${item.options.map((opt, i) => `<div class="quiz-option ${i === item.answer ? 'correct' : (i === selected ? 'wrong' : '')}">${String.fromCharCode(65+i)}. ${opt}</div>`).join('')}
+</div>
+<div class="page-section" style="border-left:4px solid var(--primary-green);">
+<h3>📖 答案解析</h3>
+<div style="font-size:12px;line-height:1.7;color:var(--text-medium);">
+<strong>正确答案：${String.fromCharCode(65+item.answer)}</strong><br>
+${item.explanation}
+</div>
+</div>
+<button class="btn-primary btn-full" onclick="nextQuestion()">${currentQ < shuffled.length-1 ? '下一题' : '查看结果'}</button>
+${isCorrect ? '<div style="text-align:center;color:#4CAF50;margin-top:8px;font-weight:700;">✅ 回答正确！</div>' : '<div style="text-align:center;color:#EF5350;margin-top:8px;font-weight:700;">❌ 已加入错题本</div>'}
+`;
+}
+
+window.nextQuestion = function() {
+currentQ++;
+renderQuestion();
+};
+
+function renderResult() {
+container.innerHTML = `
+<div style="text-align:center;padding:20px;">
+<div style="font-size:50px;margin-bottom:10px;">${score >= 7 ? '🎉' : score >= 4 ? '👍' : '💪'}</div>
+<h2 style="color:var(--dark-green);margin-bottom:8px;">练习完成！</h2>
+<div style="font-size:36px;font-weight:800;color:var(--primary-green);margin:14px 0;">${score}/${shuffled.length}</div>
+<div style="font-size:14px;color:var(--text-medium);margin-bottom:20px;">
+正确率：${Math.round(score/shuffled.length*100)}%
+</div>
+<div class="progress-bar"><div class="progress-bar-fill" style="width:${score/shuffled.length*100}%"></div></div>
+<div style="margin-top:16px;">
+<button class="btn-primary" onclick="closeQuiz();startQuiz('${module}','${dataType}')">🔄 再做一遍</button>
+<button class="btn-secondary" onclick="closeQuiz()" style="margin-left:10px;">关闭</button>
+</div>
+</div>
+`;
+// 更新模块进度
+updateModuleProgress(module);
+};
+
+renderQuestion();
+}
+
+// 百化分练习
+function startBaihuafen() {
+const shuffled = [...BaihuafenData].sort(() => Math.random() - 0.5).slice(0, 10);
+let currentQ = 0;
+let score = 0;
+
+const container = $('#quizContainer');
+$('#quizModal').classList.add('active');
+
+function renderBF() {
+if (currentQ >= shuffled.length) {
+container.innerHTML = `
+<div style="text-align:center;padding:20px;">
+<h2 style="color:var(--dark-green);margin-bottom:14px;">百化分练习完成！</h2>
+<div style="font-size:36px;font-weight:800;color:var(--primary-green);">${score}/${shuffled.length}</div>
+<button class="btn-primary btn-full" style="margin-top:16px;" onclick="closeQuiz();startBaihuafen()">🔄 再来一组</button>
+<button class="btn-secondary btn-full" style="margin-top:8px;" onclick="closeQuiz()">关闭</button>
+</div>
+`;
+return;
+}
+const item = shuffled[currentQ];
+container.innerHTML = `
+<div style="margin-bottom:10px;">
+<span class="tag tag-green">百化分 ${currentQ+1}/${shuffled.length}</span>
+</div>
+<div class="baihuafen-item">
+<div class="bf-question">${item.q}</div>
+<input type="text" id="bfAnswer" placeholder="输入答案" style="width:120px;border:1.5px solid #C8E6C9;border-radius:8px;padding:8px 12px;font-size:14px;text-align:center;">
+</div>
+<button class="btn-primary btn-full" onclick="submitBF('${item.a.replace(/'/g,"\\'")}')">提交</button>
+`;
+setTimeout(() => $('#bfAnswer')?.focus(), 100);
+}
+
+window.submitBF = function(correct) {
+const input = $('#bfAnswer');
+const userAns = input.value.trim().replace(/\s/g,'');
+const correctAns = correct.replace(/\s/g,'');
+const isCorrect = userAns === correctAns || userAns === correctAns.replace('%','');
+if (isCorrect) score++;
+
+container.innerHTML = `
+<div class="baihuafen-item">
+<div class="bf-question">${shuffled[currentQ].q}</div>
+<div style="font-size:16px;font-weight:700;color:${isCorrect?'var(--primary-green)':'#EF5350'};">
+${isCorrect ? '✅ 正确！' : '❌ 正确答案：' + correct}
+</div>
+</div>
+<button class="btn-primary btn-full" onclick="nextBF()">${currentQ < shuffled.length-1 ? '下一题' : '查看结果'}</button>
+`;
+};
+
+window.nextBF = function() {
+currentQ++;
+renderBF();
+};
+
+renderBF();
+}
+
+// 申论换金句
+function refreshQuote(btn) {
+const quote = ShenlunQuotes[Math.floor(Math.random() * ShenlunQuotes.length)];
+const section = btn.closest('.page-section');
+section.querySelector('.golden-sentence').innerHTML = `
+<div class="gs-topic">【${quote.topic}】</div>
+<div class="gs-text">${quote.text}</div>
+`;
+}
+
+// 关闭弹窗
+function closeQuiz() {
+$('#quizModal').classList.remove('active');
+}
+
+// ===== 重置数据 =====
+function resetDaily() {
+if (!confirm('确定要重置今日数据吗？')) return;
+const modules = ['言语理解','逻辑判断','数量关系','资料分析','政治理论','常识判断','申论','plan'];
+modules.forEach(m => Store.set(`todos_${m}`, []));
+// 不清空番茄钟和打卡记录（跨日自动处理）
+updateHomeProgress();
+alert('今日数据已重置！');
+location.reload();
+}
+
+function resetAll() {
+if (!confirm('⚠️ 确定要清空所有数据吗？此操作不可恢复！')) return;
+localStorage.clear();
+alert('所有数据已清空！');
+location.reload();
+}
+
+// ===== 公式速查 =====
+function showAllFormulas() {
+$('#page-zonghe').dataset.rendered = '0';
+renderZonghe($('#page-zonghe'));
+}
+
+// ===== 初始化 =====
+function init() {
+// 导航绑定
+$$('.nav-item').forEach(item => {
+item.addEventListener('click', () => navigate(item.dataset.page));
+});
+
+// 模块卡片点击
+$$('.module-card').forEach(card => {
+card.addEventListener('click', () => {
+const target = card.dataset.target;
+// 映射到正确的页面名
+const map = { yanyu:'yanyu', luoji:'luoji', shuliang:'shuliang', ziliao:'ziliao', zhengzhi:'zhengzhi', changshi:'changshi', shenlun:'shenlun' };
+navigate(map[target] || target);
+});
+});
+
+// 番茄钟按钮
+$('#timerStart').addEventListener('click', () => {
+if (timerRunning) pauseTimer();
+else startTimer();
+});
+$('#timerReset').addEventListener('click', resetTimer);
+
+// 首页打卡
+$('#desktopCheckin').addEventListener('click', doCheckin);
+
+// 倒计时设置 - 允许修改
+const savedExam = Store.get('examDate', null);
+if (savedExam) examDate = savedExam;
+
+// 初始化时钟
+updateClock();
+setInterval(updateClock, 1000);
+updateCountdown();
+updateDailyQuote();
+updateHomeProgress();
+
+// 初始渲染首页
+renderPage('home');
+
+// 检查今日是否已打卡（更新按钮状态）
+const checkins = Store.get('checkins', {});
+if (checkins[today()]) {
+$('#desktopCheckin').textContent = '✅ 已打卡';
+$('#desktopCheckin').classList.add('checked');
+}
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
