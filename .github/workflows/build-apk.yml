@@ -30,14 +30,20 @@ jobs:
 
       - name: Publish APK to repository
         env:
-          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           APK_PATH=$(ls app/build/outputs/apk/debug/*.apk | head -n 1)
           echo "Publishing: $APK_PATH"
-          gh api --method PUT "/repos/${{ github.repository }}/contents/dist/kaogong-workbench.apk" \
-            -f message="chore: publish APK" \
-            -f content="$(base64 -w0 "$APK_PATH")" \
-            -f branch="${{ github.ref_name }}"
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git checkout --orphan dist
+          git rm -rf . || true
+          mkdir -p dist
+          cp "$APK_PATH" dist/kaogong-workbench.apk
+          git add dist/kaogong-workbench.apk
+          git commit -m "chore: publish APK"
+          git push origin dist --force
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
