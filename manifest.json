@@ -1,0 +1,22 @@
+{
+"name": "考公工作台",
+"short_name": "考公台",
+"description": "公务员考试备考学习管理台",
+"start_url": "index.html",
+"display": "standalone",
+"orientation": "portrait",
+"background_color": "#F5F0E8",
+"theme_color": "#4CAF50",
+"icons": [
+{
+"src": "icon.svg",
+"sizes": "192x192",
+"type": "image/svg+xml"
+},
+{
+"src": "icon.svg",
+"sizes": "512x512",
+"type": "image/svg+xml"
+}
+]
+}
