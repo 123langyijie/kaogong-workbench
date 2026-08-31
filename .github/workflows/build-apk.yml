@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,6 +27,17 @@ jobs:
 
       - name: Build debug APK
         run: gradle --no-daemon assembleDebug
+
+      - name: Publish APK to repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          APK_PATH=$(ls app/build/outputs/apk/debug/*.apk | head -n 1)
+          echo "Publishing: $APK_PATH"
+          gh api --method PUT "/repos/${{ github.repository }}/contents/dist/kaogong-workbench.apk" \
+            -f message="chore: publish APK" \
+            -f content="$(base64 -w0 "$APK_PATH")" \
+            -f branch="${{ github.ref_name }}"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
